@@ -1,5 +1,5 @@
 fn main() {
-    let nx = 100;
+    let nx = 200;
     let ny = 100;
     //let first_line = "P3\n" + nx.to_string();
     //println!(first_line);
@@ -9,42 +9,35 @@ fn main() {
     {
         for i in 0..nx
         {
-            let r = i as f64/nx as f64;
-            let g = j as f64/ny as f64;
-            let b = 0.2;
-            //let color = Vec3{ e0: r, e1: g, e2: b };
-            let ir = (255.99*r) as u8;
-            let ig = (255.99*g) as u8;
-            let ib = (255.99*b) as u8;
+            let color = Vec3(i as f64/nx as f64, j as f64/ny as f64, 0.2);
+            let ir = (255.99*color.r()) as u8;
+            let ig = (255.99*color.g()) as u8;
+            let ib = (255.99*color.b()) as u8;
             println!("{}", format!("{} {} {}\n", ir, ig, ib));
         }
     }
     
 }
 
-// struct Vec3 {
-//     e0: f64,
-//     e1: f64,
-//     e2: f64
-// }
+struct Vec3(f64, f64, f64);
 
-// impl Vec3 {
-//     fn x(&self) -> f64 {
-//         self.e0
-//     }
-//     fn y(&self) -> f64 {
-//         self.e1
-//     }
-//     fn z(&self) -> f64 {
-//         self.e2
-//     }
-//     fn r(&self) -> f64 {
-//         self.e0
-//     }
-//     fn g(&self) -> f64 {
-//         self.e1
-//     }
-//     fn b(&self) -> f64 {
-//         self.e2
-//     }
-// }
+impl Vec3 {
+     fn x(&self) -> f64 {
+         self.0
+     }
+    fn y(&self) -> f64 {
+        self.1
+    }
+    fn z(&self) -> f64 {
+        self.2
+    }
+    fn r(&self) -> f64 {
+        self.0
+    }
+    fn g(&self) -> f64 {
+        self.1
+    }
+    fn b(&self) -> f64 {
+        self.2
+    }
+}
