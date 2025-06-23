@@ -1,4 +1,5 @@
 use std::ops::Add;
+use std::ops::Sub;
 use std::ops::Mul;
 use std::ops::Div;
 
@@ -34,14 +35,14 @@ fn main() {
             // {
             //     let unit_direction = unit_vector(&r.direction);
             //     let t = (unit_direction.y() + 1.0)*0.5;
-            //     //println!("Warning: i = {}, j = {}, t = {}, length = {}", i, j, t, r.direction.length());
+            //     println!("Warning: i = {}, j = {}, t = {}, length = {}", i, j, t, r.direction.length());
                 
             // }
             // else 
             // {
             //     let unit_direction = unit_vector(&r.direction);
             //     let t = (unit_direction.y() + 1.0)*0.5;
-            //     //println!("i = {}, j = {}, t = {}, length = {}, direction={:?}", i, j, t, r.direction.length(), r.direction);
+            //     println!("i = {}, j = {}, t = {}, length = {}, direction={:?}", i, j, t, r.direction.length(), r.direction);
             // }
 
              
@@ -78,6 +79,17 @@ impl Vec3 {
     fn length(&self) -> f64 {
         (self.0*self.0 + self.1*self.1 + self.2*self.2).sqrt()
     }
+    fn dot(&self, other: &Vec3) -> f64 {
+        self.0*other.0 + self.1*other.1 + self.2*other.2
+    }
+    fn normalize(&self) -> Vec3 {
+        let mag = self.length();
+        if mag == 0.0 {
+            Vec3(0.0, 0.0, 0.0) // or handle differently if you prefer
+        } else {
+            Vec3(self.0 / mag, self.1 / mag, self.2 / mag)
+        }
+    }
 }
 
 impl Add for Vec3 {
@@ -88,6 +100,25 @@ impl Add for Vec3 {
             self.1 + other.1,
             self.2 + other.2
         )
+    }
+}
+
+impl Sub for Vec3 {
+    type Output = Self;
+    fn sub(self, other: Self) -> Self {
+        Self (
+            self.0 - other.0,
+            self.1 - other.1,
+            self.2 - other.2
+        )
+    }
+}
+
+impl Sub for &Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, rhs: &Vec3) -> Vec3 {
+        Vec3(self.0 - rhs.0, self.1 - rhs.1, self.2 - rhs.2)
     }
 }
 
@@ -116,13 +147,29 @@ struct Ray {
     }
 
 fn unit_vector(vector: &Vec3) -> Vec3 {
-    let unit_vector = Vec3 {..*vector};
-    unit_vector / vector.length()
+    //let unit_vector = Vec3 {..*vector};
+    let len = vector.length();
+    Vec3 (vector.0 / len, vector.1 / len, vector.2 / len)
+}
+
+fn hit_sphere(center: &Vec3, radius: f64, ray: &Ray) -> bool {
+    let diff = &ray.origin - center;
+    let oc = &diff;
+    let a = ray.direction.dot(&ray.direction);
+    let b = 2.0 * oc.dot(&ray.direction);
+    let c = oc.dot(oc) - radius * radius;
+    let discriminant = b*b - a*c*4.0;
+    return discriminant > 0.0;
 }
 
 fn color(r: &Ray) -> Vec3 {
-    let unit_direction = unit_vector(&r.direction);
+    //let unit_direction = unit_vector(&r.direction);
+    if hit_sphere(&Vec3(0.0, 0.0, -1.0), 0.5, r) {
+        return Vec3(1.0, 0.0, 0.0);
+    }
+        
+    let unit_direction = &r.direction.normalize();
     let t = (unit_direction.y() + 1.0)*0.5;
-    Vec3(1.0, 1.0, 1.0)*(1.0 - t) + Vec3(0.5, 0.7, 1.0)*t
+    return Vec3(1.0, 1.0, 1.0)*(1.0 - t) + Vec3(0.5, 0.7, 1.0)*t;
 }
 
