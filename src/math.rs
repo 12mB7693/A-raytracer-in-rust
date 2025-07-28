@@ -4,6 +4,7 @@ use std::ops::Mul;
 use std::ops::Div;
 
 #[derive(Debug)]
+#[derive(PartialEq)]
 pub struct Vec3(pub f64, pub f64, pub f64);
 
 impl Vec3 {
