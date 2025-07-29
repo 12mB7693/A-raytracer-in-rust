@@ -3,7 +3,7 @@ use std::ops::Sub;
 use std::ops::Mul;
 use std::ops::Div;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 #[derive(PartialEq)]
 pub struct Vec3(pub f64, pub f64, pub f64);
 
@@ -61,7 +61,41 @@ impl Add for &Vec3 {
     }
 }
 
+impl Add<Vec3> for &Vec3 {
+    type Output = Vec3;
+
+    fn add(self, other: Vec3) -> Vec3 {
+        Vec3 (self.0 + other.0, self.1 + other.1, self.2 + other.2)
+    }
+}
+
+impl Add<&Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn add(self, other: &Vec3) -> Vec3 {
+        Vec3 (self.0 + other.0, self.1 + other.1, self.2 + other.2)
+    }
+}
+
+
+
 impl Sub for &Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, rhs: &Vec3) -> Vec3 {
+        Vec3(self.0 - rhs.0, self.1 - rhs.1, self.2 - rhs.2)
+    }
+}
+
+impl Sub<Vec3> for &Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, rhs: Vec3) -> Vec3 {
+        Vec3(self.0 - rhs.0, self.1 - rhs.1, self.2 - rhs.2)
+    }
+}
+
+impl Sub<&Vec3> for Vec3 {
     type Output = Vec3;
 
     fn sub(self, rhs: &Vec3) -> Vec3 {
