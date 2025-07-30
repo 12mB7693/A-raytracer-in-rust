@@ -40,6 +40,9 @@ impl Vec3 {
             Vec3(self.0 / mag, self.1 / mag, self.2 / mag)
         }
     }
+    pub fn reflect(&self, n: &Vec3) -> Vec3{
+        self - n*self.dot(n)*2.0
+    }
 }
 
 impl Add for Vec3 {

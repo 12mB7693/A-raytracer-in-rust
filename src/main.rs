@@ -2,11 +2,13 @@ mod math;
 mod hitable;
 mod geometric;
 mod camera;
+mod material;
 
 use math::Vec3;
 use hitable::{HitableList, Sphere, HitRecord, Hitable};
 use geometric::Ray;
 use camera::Camera;
+use material::{Metal, Lambertian};
 use rand::Rng;
 
 fn main() {
@@ -19,8 +21,10 @@ fn main() {
     println!("{}", header);
     
     let mut hitable_list: Vec<Sphere> = Vec::new();
-    hitable_list.push(Sphere {center: Vec3(0.0, 0.0, -1.0), radius: 0.5});
-    hitable_list.push(Sphere {center: Vec3(0.0, -100.5, -1.0), radius: 100.0});
+    hitable_list.push(Sphere {center: Vec3(0.0, 0.0, -1.0), radius: 0.5, material: Box::new(Lambertian { albedo: Vec3(0.8, 0.3, 0.3) })});
+    hitable_list.push(Sphere {center: Vec3(0.0, -100.5, -1.0), radius: 100.0, material:Box::new( Lambertian { albedo: Vec3(0.8, 0.8, 0.0) })});
+    hitable_list.push(Sphere {center: Vec3(1.0, 0.0, -1.0), radius: 0.5, material: Box::new(Metal { albedo: Vec3(0.8, 0.6, 0.2), fuzz: 0.3})});
+    hitable_list.push(Sphere {center: Vec3(-1.0, 0.0, -1.0), radius: 0.5, material: Box::new(Metal { albedo: Vec3(0.8, 0.8, 0.8), fuzz: 1.0 })});
     let world = HitableList { hitable_list: hitable_list };
     let camera = Camera { ..Default::default() };
     let mut rng = rand::rng();
@@ -31,7 +35,6 @@ fn main() {
             let mut col = Vec3(0.0, 0.0, 0.0);
             for _ in 0..ns
             {
-                //let secret_number = rand::thread_rng().gen_range(1..=100);
                 let x : f64 = rng.random();
                 let y : f64 = rng.random();
                 // let x = 0.0;
@@ -49,7 +52,7 @@ fn main() {
                 //     direction: lower_left_corner + horizontal*u + vertical*v
                 // };
                 let r = camera.get_ray(u, v);
-                col = col + color(&r, &world); // Vec3(u, v, 0.2);
+                col = col + color(&r, &world, 0); // Vec3(u, v, 0.2);
 
                 // Debugging
                 // if col.r() < 1.0 && col.g() < 1.0
@@ -77,37 +80,22 @@ fn main() {
 }
 
 
-    
-
-// fn hit_sphere(center: &Vec3, radius: f64, ray: &Ray) -> f64 {
-//     let diff = &ray.origin - center;
-//     let oc = &diff;
-//     let a = ray.direction.dot(&ray.direction);
-//     let b = 2.0 * oc.dot(&ray.direction);
-//     let c = oc.dot(oc) - radius * radius;
-//     let discriminant = b*b - a*c*4.0;
-//     if discriminant < 0.0 {
-//         -1.0
-//     }
-//     else {
-//         (-b - discriminant.sqrt())/ (2.0 * a)
-//     }
-// }
-
-
-fn color<T: Hitable>(r: &geometric::Ray, world: &T) -> Vec3 {
-    //let unit_direction = unit_vector(&r.direction);
-    // let t =  hit_sphere(&Vec3(0.0, 0.0, -1.0), 0.5, r);
-    let mut rec = HitRecord{t: 0.0, p: Vec3(0.0,0.0,0.0), normal: Vec3(0.0,0.0,0.0)};
-    if world.hit(r, 0.001, f64::INFINITY, &mut rec)
+fn color<T: Hitable>(r: &geometric::Ray, world: &T, depth: i32) -> Vec3 {
+    let (hit, rec, material) = world.hit(r, 0.001, f64::INFINITY);
+    if hit
     {
-        let target = &rec.p + &rec.normal + random_in_unit_sphere();
-        let ray = Ray {
-            origin: rec.p.clone(), 
-            direction: target - &rec.p
-        };
-        return color(&ray, world)*0.5;
-        //return Vec3(rec.normal.x() + 1.0, rec.normal.y() + 1.0, rec.normal.z() + 1.0)*0.5;
+        if material.is_none() {
+            return Vec3(0.0, 0.0, 0.0);
+        }
+        let material = material.unwrap();
+        let (attenuation, scattered, is_scattered) = material.scatter(r, &rec);
+        if depth < 50 && is_scattered {
+            let new_color = color(&scattered, world, depth+1);
+            return Vec3(new_color.x()*attenuation.x(), new_color.y()*attenuation.y(), new_color.z()*attenuation.z());
+        }
+        else {
+            return Vec3(0.0, 0.0, 0.0);
+        }
     }
     else {
         let unit_direction = r.direction.normalize();
@@ -117,14 +105,14 @@ fn color<T: Hitable>(r: &geometric::Ray, world: &T) -> Vec3 {
 }
 
 fn random_in_unit_sphere() -> Vec3 {
-    let mut p = Vec3 (0.0, 0.0, 0.0);
+    let mut p; 
     let mut rng = rand::rng();
     loop {
         let x : f64 = rng.random();
         let y : f64 = rng.random();
         let z : f64 = rng.random();
         p = Vec3(x, y, z)*2.0 - Vec3(1.0, 1.0, 1.0);
-        if (p.length()*p.length() < 1.0) {
+        if p.length()*p.length() < 1.0 {
             break;
         }
     }
