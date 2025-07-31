@@ -29,8 +29,17 @@ impl Vec3 {
     pub fn length(&self) -> f64 {
         (self.0*self.0 + self.1*self.1 + self.2*self.2).sqrt()
     }
+
     pub fn dot(&self, other: &Vec3) -> f64 {
         self.0*other.0 + self.1*other.1 + self.2*other.2
+    }
+
+    pub fn cross(&self, v2: &Vec3) -> Vec3 {
+        Vec3(
+            self.y()*v2.z() - self.z()*v2.y(), 
+            self.z()*v2.x() - self.x()*v2.z(), 
+            self.x()*v2.y() - self.y()*v2.x()
+        )
     }
     pub fn normalize(&self) -> Vec3 {
         let mag = self.length();
