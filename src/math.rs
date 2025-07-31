@@ -43,6 +43,20 @@ impl Vec3 {
     pub fn reflect(&self, n: &Vec3) -> Vec3{
         self - n*self.dot(n)*2.0
     }
+
+    pub fn refract(&self, n: &Vec3, ni_over_nt: f64) -> (bool, Vec3) {
+        let uv = self.normalize();
+        let dt = uv.dot(n);
+        let discriminant = 1.0 - ni_over_nt*ni_over_nt*(1.0-dt*dt);
+        let mut refracted = Vec3(0.0, 0.0, 0.0);
+        if discriminant > 0.0 {
+            refracted = (uv - n*dt)*ni_over_nt - n*discriminant.sqrt();
+            (true, refracted)
+        }
+        else {
+            (false, refracted)
+        }
+    }
 }
 
 impl Add for Vec3 {

@@ -54,7 +54,7 @@ impl Hitable for Sphere {
                     p : r.point_at_parameter(temp),
                     normal : (&r.point_at_parameter(temp) - &self.center) / self.radius
                 };
-                return (true, rec, None);
+                return (true, rec, Some(&*self.material));
             }
         }
         return (false, HitRecord {..Default::default()}, None);

@@ -2,9 +2,75 @@ use crate::Ray;
 use crate::Vec3;
 use crate::HitRecord;
 use crate::random_in_unit_sphere;
+use rand::Rng;
 
 pub trait Material {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> (Vec3, Ray, bool);
+}
+
+pub struct Dielectric {
+    pub ref_idx: f64
+}
+
+impl Dielectric {
+    fn schlick(&self, cosine: f64) -> f64 {
+        let mut r0 = (1.0 - self.ref_idx) / (1.0 + self.ref_idx);
+        r0 = r0 * r0;
+
+        let f = f64::powf(1.0 - cosine, 5.0);
+        r0 + (1.0 - r0)*f
+    }
+}
+
+impl Material for Dielectric {
+    fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> (Vec3, Ray, bool) {
+        let reflected = r_in.direction.reflect(&rec.normal);
+        let attenuation = Vec3(1.0, 1.0, 1.0);
+        let outward_normal;
+        let ni_over_nt;
+        let reflect_prob;
+        let cosine;
+        let scattered;
+        if r_in.direction.dot(&rec.normal) > 0.0 {
+            outward_normal = &rec.normal*(-1.0);
+            ni_over_nt = self.ref_idx;
+            cosine = self.ref_idx * r_in.direction.dot(&rec.normal) / r_in.direction.length();
+        }
+        else {
+            outward_normal = rec.normal.clone();
+            ni_over_nt = 1.0/self.ref_idx;
+            cosine = r_in.direction.dot(&rec.normal) * (-1.0) / r_in.direction.length();
+        }
+
+        let (is_scattered, refracted) = r_in.direction.refract(&outward_normal, ni_over_nt);
+        if is_scattered {
+            reflect_prob = self.schlick(cosine);
+            //let scattered = Ray { origin: rec.p.clone(), direction: refracted};
+            //return (attenuation, scattered, true);
+        }
+        else {
+            reflect_prob = 1.0;
+            // let scattered = Ray { origin: rec.p.clone(), direction: reflected};
+            // return (attenuation, scattered, false);
+
+        }
+        let mut rng = rand::rng();
+        let x : f64 = rng.random();
+        if x < reflect_prob {
+            scattered  = Ray {
+                origin: rec.p.clone(),
+                direction: reflected
+            };
+        }
+        else {
+            scattered = Ray {
+                origin: rec.p.clone(),
+                direction: refracted
+            };
+        }
+        
+        return (attenuation, scattered, true);
+    }
 }
 
 pub struct Metal {

@@ -8,7 +8,7 @@ use math::Vec3;
 use hitable::{HitableList, Sphere, HitRecord, Hitable};
 use geometric::Ray;
 use camera::Camera;
-use material::{Metal, Lambertian};
+use material::{Metal, Lambertian, Dielectric};
 use rand::Rng;
 
 fn main() {
@@ -21,10 +21,11 @@ fn main() {
     println!("{}", header);
     
     let mut hitable_list: Vec<Sphere> = Vec::new();
-    hitable_list.push(Sphere {center: Vec3(0.0, 0.0, -1.0), radius: 0.5, material: Box::new(Lambertian { albedo: Vec3(0.8, 0.3, 0.3) })});
+    hitable_list.push(Sphere {center: Vec3(0.0, 0.0, -1.0), radius: 0.5, material: Box::new(Lambertian { albedo: Vec3(0.1, 0.2, 0.5) })});
     hitable_list.push(Sphere {center: Vec3(0.0, -100.5, -1.0), radius: 100.0, material:Box::new( Lambertian { albedo: Vec3(0.8, 0.8, 0.0) })});
-    hitable_list.push(Sphere {center: Vec3(1.0, 0.0, -1.0), radius: 0.5, material: Box::new(Metal { albedo: Vec3(0.8, 0.6, 0.2), fuzz: 0.3})});
-    hitable_list.push(Sphere {center: Vec3(-1.0, 0.0, -1.0), radius: 0.5, material: Box::new(Metal { albedo: Vec3(0.8, 0.8, 0.8), fuzz: 1.0 })});
+    hitable_list.push(Sphere {center: Vec3(1.0, 0.0, -1.0), radius: 0.5, material: Box::new(Metal { albedo: Vec3(0.8, 0.6, 0.2), fuzz: 0.2})});
+    hitable_list.push(Sphere {center: Vec3(-1.0, 0.0, -1.0), radius: 0.5, material: Box::new(Dielectric { ref_idx: 1.5 })});
+    hitable_list.push(Sphere {center: Vec3(-1.0, 0.0, -1.0), radius: -0.45, material: Box::new(Dielectric { ref_idx: 1.5 })});
     let world = HitableList { hitable_list: hitable_list };
     let camera = Camera { ..Default::default() };
     let mut rng = rand::rng();
