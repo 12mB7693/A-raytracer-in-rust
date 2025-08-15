@@ -1,7 +1,7 @@
-use crate::HitRecord;
-use crate::Ray;
-use crate::Vec3;
-use crate::random_in_unit_sphere;
+use crate::geometric::Ray;
+use crate::hitable::HitRecord;
+use crate::math::Vec3;
+use crate::raytracing::random_in_unit_sphere;
 use rand::Rng;
 
 pub trait Material {
@@ -44,12 +44,8 @@ impl Material for Dielectric {
         let (is_scattered, refracted) = r_in.direction.refract(&outward_normal, ni_over_nt);
         if is_scattered {
             reflect_prob = self.schlick(cosine);
-            //let scattered = Ray { origin: rec.p.clone(), direction: refracted};
-            //return (attenuation, scattered, true);
         } else {
             reflect_prob = 1.0;
-            // let scattered = Ray { origin: rec.p.clone(), direction: reflected};
-            // return (attenuation, scattered, false);
         }
         let mut rng = rand::rng();
         let x: f64 = rng.random();

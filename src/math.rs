@@ -43,7 +43,7 @@ impl Vec3 {
     pub fn normalize(&self) -> Vec3 {
         let mag = self.length();
         if mag == 0.0 {
-            Vec3(0.0, 0.0, 0.0) // or handle differently if you prefer
+            Vec3(0.0, 0.0, 0.0)
         } else {
             Vec3(self.0 / mag, self.1 / mag, self.2 / mag)
         }
@@ -148,9 +148,3 @@ impl Div<f64> for Vec3 {
         Self(self.0 / rhs, self.1 / rhs, self.2 / rhs)
     }
 }
-
-// pub fn unit_vector(vector: &Vec3) -> Vec3 {
-//     //let unit_vector = Vec3 {..*vector};
-//     let len = vector.length();
-//     Vec3 (vector.0 / len, vector.1 / len, vector.2 / len)
-// }
