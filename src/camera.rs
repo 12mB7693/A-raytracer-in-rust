@@ -2,7 +2,6 @@ use crate::Ray;
 use crate::Vec3;
 use rand::Rng;
 
-//#[derive(Default)]
 pub struct Camera {
     pub origin: Vec3,
     pub lower_left_corner: Vec3,
