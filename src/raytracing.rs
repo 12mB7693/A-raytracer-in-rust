@@ -24,27 +24,48 @@ pub fn generate_scene() {
         }),
     });
 
-    // uncomment to render 100 random spheres
-    // for a in -11..11 {
-    //     for b in -11..11 {
-    //         let choose_mat : f64 = rng.random();
-    //         let x : f64 = rng.random();
-    //         let center = Vec3 (a as f64 + 0.9*x, 0.2, b as f64 + 0.9*rng.random_range(0.0..1.0));
-    //         if (&center - Vec3(4.0, 0.2, 0.0)).length() > 0.9 {
-    //             let random_vec = Vec3(rng.random_range(0.0..1.0)*rng.random_range(0.0..1.0), rng.random_range(0.0..1.0)*rng.random_range(0.0..1.0), rng.random_range(0.0..1.0)*rng.random_range(0.0..1.0));
-    //             if choose_mat < 0.8 {
-    //                 hitable_list.push(Sphere {center: center, radius: 0.2, material: Box::new(Lambertian {albedo: random_vec})});
-    //             }
-    //             else if choose_mat < 0.95 {
-    //                 hitable_list.push(Sphere {center: center, radius: 0.2, material: Box::new(Metal {albedo: random_vec, fuzz: 0.1})});
-
-    //             }
-    //             else {
-    //                 hitable_list.push(Sphere {center: center, radius: 0.2, material: Box::new(Dielectric { ref_idx: 1.5 })});
-    //             }
-    //         }
-    //     }
-    // }
+    // ---- (un)comment to (not) render 100 random spheres -----
+    for a in -11..11 {
+        for b in -11..11 {
+            let choose_mat: f64 = rng.random();
+            let x: f64 = rng.random();
+            let center = Vec3(
+                a as f64 + 0.9 * x,
+                0.2,
+                b as f64 + 0.9 * rng.random_range(0.0..1.0),
+            );
+            if (&center - Vec3(4.0, 0.2, 0.0)).length() > 0.9 {
+                let random_vec = Vec3(
+                    rng.random_range(0.0..1.0) * rng.random_range(0.0..1.0),
+                    rng.random_range(0.0..1.0) * rng.random_range(0.0..1.0),
+                    rng.random_range(0.0..1.0) * rng.random_range(0.0..1.0),
+                );
+                if choose_mat < 0.8 {
+                    hitable_list.push(Sphere {
+                        center: center,
+                        radius: 0.2,
+                        material: Box::new(Lambertian { albedo: random_vec }),
+                    });
+                } else if choose_mat < 0.95 {
+                    hitable_list.push(Sphere {
+                        center: center,
+                        radius: 0.2,
+                        material: Box::new(Metal {
+                            albedo: random_vec,
+                            fuzz: 0.1,
+                        }),
+                    });
+                } else {
+                    hitable_list.push(Sphere {
+                        center: center,
+                        radius: 0.2,
+                        material: Box::new(Dielectric { ref_idx: 1.5 }),
+                    });
+                }
+            }
+        }
+    }
+    // -------------------------------------------------------
 
     hitable_list.push(Sphere {
         center: Vec3(0.0, 1.0, 0.0),
