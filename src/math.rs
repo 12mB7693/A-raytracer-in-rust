@@ -148,3 +148,140 @@ impl Div<f64> for Vec3 {
         Self(self.0 / rhs, self.1 / rhs, self.2 / rhs)
     }
 }
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    fn test_add_for_vec3_obj_obj() {
+        let vector1 = Vec3(1.0, 2.0, 3.0);
+        let vector2 = Vec3(2.0, -1.0, 4.0);
+
+        let result = vector1 + vector2;
+
+        let expected = Vec3(3.0, 1.0, 7.0);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_add_for_vec3_obj_ref() {
+        let vector1 = Vec3(1.0, 2.0, 3.0);
+        let vector2 = Vec3(2.0, -1.0, 4.0);
+
+        let result = vector1 + &vector2;
+
+        let expected = Vec3(3.0, 1.0, 7.0);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_add_for_vec3_ref_obj() {
+        let vector1 = Vec3(1.0, 2.0, 3.0);
+        let vector2 = Vec3(2.0, -1.0, 4.0);
+
+        let result = &vector1 + vector2;
+
+        let expected = Vec3(3.0, 1.0, 7.0);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_add_for_vec3_ref_ref() {
+        let vector1 = Vec3(1.0, 2.0, 3.0);
+        let vector2 = Vec3(2.0, -1.0, 4.0);
+
+        let result = &vector1 + &vector2;
+
+        let expected = Vec3(3.0, 1.0, 7.0);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_sub_for_vec3_obj_obj() {
+        let vector1 = Vec3(1.0, 2.0, 3.0);
+        let vector2 = Vec3(2.0, -1.0, 4.0);
+
+        let result = vector1 - vector2;
+
+        let expected = Vec3(-1.0, 3.0, -1.0);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_sub_for_vec3_obj_ref() {
+        let vector1 = Vec3(1.0, 2.0, 3.0);
+        let vector2 = Vec3(2.0, -1.0, 4.0);
+
+        let result = vector1 - &vector2;
+
+        let expected = Vec3(-1.0, 3.0, -1.0);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_sub_for_vec3_ref_obj() {
+        let vector1 = Vec3(1.0, 2.0, 3.0);
+        let vector2 = Vec3(2.0, -1.0, 4.0);
+
+        let result = &vector1 - vector2;
+
+        let expected = Vec3(-1.0, 3.0, -1.0);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_sub_for_vec3_ref_ref() {
+        let vector1 = Vec3(1.0, 2.0, 3.0);
+        let vector2 = Vec3(2.0, -1.0, 4.0);
+        let result = &vector1 - &vector2;
+        let expected = Vec3(-1.0, 3.0, -1.0);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_mul_for_vec3_obj() {
+        let vector = Vec3(1.0, 2.0, 3.0);
+        let scalar = 2.0;
+        let result = vector * scalar;
+        let expected = Vec3(2.0, 4.0, 6.0);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_mul_for_vec3_ref() {
+        let vector = Vec3(1.0, 2.0, 3.0);
+        let scalar = 0.5;
+        let result = &vector * scalar;
+        let expected = Vec3(0.5, 1.0, 1.5);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_div_for_vec3_obj() {
+        let vector = Vec3(1.0, 2.0, 3.0);
+        let scalar = 0.5;
+        let result = vector / scalar;
+        let expected = Vec3(2.0, 4.0, 6.0);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_length() {
+        let vector1 = Vec3(1.0, 2.0, 2.0);
+        let vector2 = Vec3(2.0, -1.0, 2.0);
+        let vector3 = Vec3(-4.0, 3.0, 0.0);
+        assert_eq!(vector1.length(), 3.0);
+        assert_eq!(vector2.length(), 3.0);
+        assert_eq!(vector3.length(), 5.0);
+    }
+
+    #[test]
+    fn test_dot() {
+        let vector1 = Vec3(1.0, 2.0, 2.0);
+        let vector2 = Vec3(2.0, -1.0, 2.0);
+        let result = vector1.dot(&vector2);
+        assert_eq!(result, 4.0);
+    }
+}
